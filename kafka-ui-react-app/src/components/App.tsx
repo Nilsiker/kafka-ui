@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, useLocation } from 'react-router-dom';
+import { Switch as ReactSwitch, Route, useLocation } from 'react-router-dom';
 import { GIT_TAG, GIT_COMMIT } from 'lib/constants';
 import Nav from 'components/Nav/Nav';
 import PageLoader from 'components/common/PageLoader/PageLoader';
@@ -8,7 +8,7 @@ import ClusterPage from 'components/Cluster/Cluster';
 import Version from 'components/Version/Version';
 import Alerts from 'components/Alerts/Alerts';
 import { ThemeProvider } from 'styled-components';
-import theme from 'theme/theme';
+import { lightTheme, darkTheme } from 'theme/theme';
 import { useAppDispatch, useAppSelector } from 'lib/hooks/redux';
 import {
   fetchClusters,
@@ -18,17 +18,23 @@ import {
 
 import * as S from './App.styled';
 import Logo from './common/Logo/Logo';
+import Switch from './common/Switch/Switch';
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const areClustersFulfilled = useAppSelector(getAreClustersFulfilled);
   const clusters = useAppSelector(getClusterList);
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(false);
+  const [darkMode, setDarkMode] = React.useState(false);
 
   const onBurgerClick = React.useCallback(
     () => setIsSidebarVisible(!isSidebarVisible),
     [isSidebarVisible]
   );
+
+  const onDarkModeClick = React.useCallback(() => {
+    setDarkMode(!darkMode);
+  }, [darkMode]);
 
   const closeSidebar = React.useCallback(() => setIsSidebarVisible(false), []);
 
@@ -43,7 +49,7 @@ const App: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <S.Layout>
         <S.Navbar role="navigation" aria-label="Page Header">
           <S.NavbarBrand>
@@ -62,10 +68,16 @@ const App: React.FC = () => {
               <Logo />
               UI for Apache Kafka
             </S.Hyperlink>
-
             <S.NavbarItem>
               {GIT_TAG && <Version tag={GIT_TAG} commit={GIT_COMMIT} />}
             </S.NavbarItem>
+            <S.SwitchWrapper>
+              <Switch
+                name="Theme"
+                checked={darkMode}
+                onChange={onDarkModeClick}
+              />
+            </S.SwitchWrapper>
           </S.NavbarBrand>
         </S.Navbar>
 
@@ -85,14 +97,14 @@ const App: React.FC = () => {
             aria-label="Overlay"
           />
           {areClustersFulfilled ? (
-            <Switch>
+            <ReactSwitch>
               <Route
                 exact
                 path={['/', '/ui', '/ui/clusters']}
                 component={Dashboard}
               />
               <Route path="/ui/clusters/:clusterName" component={ClusterPage} />
-            </Switch>
+            </ReactSwitch>
           ) : (
             <PageLoader />
           )}

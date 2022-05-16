@@ -204,3 +204,9 @@ export const AlertsContainer = styled.div`
     max-width: initial;
   }
 `;
+
+export const SwitchWrapper = styled.div`
+  padding: 16px;
+  margin-right: 0px;
+  margin-left: auto;
+`;

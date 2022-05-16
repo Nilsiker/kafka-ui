@@ -6,6 +6,7 @@ interface TableCellProps {
 
 export const SwitchWrapper = styled.div`
   padding: 16px;
+  background-color: ${({ theme }) => theme.alert.color.info};
 `;
 
 export const TableCell = styled.td.attrs({ role: 'cells' })<TableCellProps>`
