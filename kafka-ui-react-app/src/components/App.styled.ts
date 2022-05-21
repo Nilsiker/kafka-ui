@@ -1,6 +1,14 @@
 import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 
+export const Body = styled.body(
+  ({ theme }) => css`
+    color: ${theme.table.th.color.normal};
+    background-color: ${theme.panelColor};
+    height: calc(100vh - 3.25rem);
+  `
+);
+
 export const Layout = styled.div`
   min-width: 1200px;
 
@@ -189,6 +197,10 @@ export const Hyperlink = styled(Link)(
     text-decoration: none;
     word-break: break-word;
     cursor: pointer;
+
+    :hover {
+      color: ${theme.menu.color.hover};
+    }
   `
 );
 

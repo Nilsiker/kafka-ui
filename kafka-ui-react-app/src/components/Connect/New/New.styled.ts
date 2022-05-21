@@ -9,4 +9,9 @@ export const NewConnectFormStyled = styled.form`
   & > button:last-child {
     align-self: flex-start;
   }
+
+  .ace_editor {
+    background-color: white !important;
+    border-radius: 4px;
+  }
 `;

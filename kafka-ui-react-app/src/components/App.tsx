@@ -25,7 +25,11 @@ const App: React.FC = () => {
   const areClustersFulfilled = useAppSelector(getAreClustersFulfilled);
   const clusters = useAppSelector(getClusterList);
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(false);
-  const [darkMode, setDarkMode] = React.useState(false);
+
+  const storedDarkMode = localStorage.getItem('darkmode');
+  const [darkMode, setDarkMode] = React.useState(
+    storedDarkMode ? JSON.parse(storedDarkMode) : false
+  );
 
   const onBurgerClick = React.useCallback(
     () => setIsSidebarVisible(!isSidebarVisible),
@@ -34,6 +38,7 @@ const App: React.FC = () => {
 
   const onDarkModeClick = React.useCallback(() => {
     setDarkMode(!darkMode);
+    localStorage.setItem('darkmode', (!darkMode).toString());
   }, [darkMode]);
 
   const closeSidebar = React.useCallback(() => setIsSidebarVisible(false), []);
@@ -50,69 +55,78 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
-      <S.Layout>
-        <S.Navbar role="navigation" aria-label="Page Header">
-          <S.NavbarBrand>
-            <S.NavbarBurger
-              onClick={onBurgerClick}
-              onKeyDown={onBurgerClick}
-              role="button"
-              tabIndex={0}
-            >
-              <S.Span role="separator" />
-              <S.Span role="separator" />
-              <S.Span role="separator" />
-            </S.NavbarBurger>
+      <S.Body>
+        <S.Layout>
+          <S.Navbar role="navigation" aria-label="Page Header">
+            <S.NavbarBrand>
+              <S.NavbarBurger
+                onClick={onBurgerClick}
+                onKeyDown={onBurgerClick}
+                role="button"
+                tabIndex={0}
+              >
+                <S.Span role="separator" />
+                <S.Span role="separator" />
+                <S.Span role="separator" />
+              </S.NavbarBurger>
 
-            <S.Hyperlink to="/">
-              <Logo />
-              UI for Apache Kafka
-            </S.Hyperlink>
-            <S.NavbarItem>
-              {GIT_TAG && <Version tag={GIT_TAG} commit={GIT_COMMIT} />}
-            </S.NavbarItem>
-            <S.SwitchWrapper>
-              <Switch
-                name="Theme"
-                checked={darkMode}
-                onChange={onDarkModeClick}
+              <S.Hyperlink to="/">
+                <Logo />
+                UI for Apache Kafka
+              </S.Hyperlink>
+              <S.NavbarItem>
+                {GIT_TAG && <Version tag={GIT_TAG} commit={GIT_COMMIT} />}
+              </S.NavbarItem>
+              <S.SwitchWrapper>
+                <label>☀ </label>
+                <Switch
+                  name="Theme"
+                  checked={darkMode}
+                  onChange={onDarkModeClick}
+                />
+                <label>
+                  <b>☾</b>
+                </label>
+              </S.SwitchWrapper>
+            </S.NavbarBrand>
+          </S.Navbar>
+
+          <S.Container>
+            <S.Sidebar aria-label="Sidebar" $visible={isSidebarVisible}>
+              <Nav
+                clusters={clusters}
+                areClustersFulfilled={areClustersFulfilled}
               />
-            </S.SwitchWrapper>
-          </S.NavbarBrand>
-        </S.Navbar>
-
-        <S.Container>
-          <S.Sidebar aria-label="Sidebar" $visible={isSidebarVisible}>
-            <Nav
-              clusters={clusters}
-              areClustersFulfilled={areClustersFulfilled}
+            </S.Sidebar>
+            <S.Overlay
+              $visible={isSidebarVisible}
+              onClick={closeSidebar}
+              onKeyDown={closeSidebar}
+              tabIndex={-1}
+              aria-hidden="true"
+              aria-label="Overlay"
             />
-          </S.Sidebar>
-          <S.Overlay
-            $visible={isSidebarVisible}
-            onClick={closeSidebar}
-            onKeyDown={closeSidebar}
-            tabIndex={-1}
-            aria-hidden="true"
-            aria-label="Overlay"
-          />
-          {areClustersFulfilled ? (
-            <ReactSwitch>
-              <Route
-                exact
-                path={['/', '/ui', '/ui/clusters']}
-                component={Dashboard}
-              />
-              <Route path="/ui/clusters/:clusterName" component={ClusterPage} />
-            </ReactSwitch>
-          ) : (
-            <PageLoader />
-          )}
-        </S.Container>
-        <S.AlertsContainer role="toolbar">
-          <Alerts />
-        </S.AlertsContainer>
-      </S.Layout>
+            {areClustersFulfilled ? (
+              <ReactSwitch>
+                <Route
+                  exact
+                  path={['/', '/ui', '/ui/clusters']}
+                  component={Dashboard}
+                />
+                <Route
+                  path="/ui/clusters/:clusterName"
+                  component={ClusterPage}
+                />
+              </ReactSwitch>
+            ) : (
+              <PageLoader />
+            )}
+          </S.Container>
+          <S.AlertsContainer role="toolbar">
+            <Alerts />
+          </S.AlertsContainer>
+        </S.Layout>
+      </S.Body>
     </ThemeProvider>
   );
 };

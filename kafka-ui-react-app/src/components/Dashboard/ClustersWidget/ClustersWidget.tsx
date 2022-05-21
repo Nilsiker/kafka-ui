@@ -94,9 +94,9 @@ const ClustersWidget: React.FC<Props> = ({
                   {cluster.onlinePartitionCount}
                 </S.TableCell>
                 <S.TableCell maxWidth="60px">
-                  <NavLink to={clusterTopicsPath(cluster.name)}>
+                  <S.NavLink to={clusterTopicsPath(cluster.name)}>
                     {cluster.topicCount}
-                  </NavLink>
+                  </S.NavLink>
                 </S.TableCell>
                 <S.TableCell maxWidth="85px">
                   <BytesFormatted value={cluster.bytesInPerSec} />
